@@ -1,0 +1,27 @@
+{
+  "name": "tia-portal-mcp",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "test": "node --test tests/*.test.mjs",
+    "start": "node src/server.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "configure": "node scripts/configure.mjs",
+    "test:integration": "node scripts/test-integration.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.31.0",
+    "zod": "3.25.76"
+  },
+  "description": "用 AI Agent 完成 TIA 博途编程与仿真。",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jackmaikr4-sketch/TIA-automation-skill-mcp.git"
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+config.json
+bin/
+artifacts/
+projects/
+vendor/
+.npm-cache/
+*.log
+*.bak*
+.env*
