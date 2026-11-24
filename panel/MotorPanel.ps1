@@ -1,4 +1,4 @@
-﻿param([Parameter(Mandatory=$true)][string]$ConfigFile)
+param([Parameter(Mandatory = $true)][string]$ConfigFile)
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -134,98 +134,102 @@ try {
     $btnStart.Add_Click({ try { Send-PanelAction 'start'; $lblMessage.Text = '正在发送启动命令…' } catch { $lblMessage.Text = $_.Exception.Message } })
     $btnStop.Add_Click({ try { Release-Jog; Send-PanelAction 'stop'; $lblMessage.Text = '正在发送停止命令…' } catch { $lblMessage.Text = $_.Exception.Message } })
     $btnJog.Add_MouseDown({ param($sender, $eventArgs)
-        if ($eventArgs.Button -eq [Windows.Forms.MouseButtons]::Left -and -not $script:jogHeld -and -not $script:closing) {
-            $script:jogHeld = $true
-            $btnJog.Capture = $true
-            try { Send-PanelAction 'jog_on' } catch { Release-Jog; $lblMessage.Text = $_.Exception.Message }
-        }
-    })
+            if ($eventArgs.Button -eq [Windows.Forms.MouseButtons]::Left -and -not $script:jogHeld -and -not $script:closing) {
+                $script:jogHeld = $true
+                $btnJog.Capture = $true
+                try { Send-PanelAction 'jog_on' } catch { Release-Jog; $lblMessage.Text = $_.Exception.Message }
+            }
+        })
     $btnJog.Add_MouseUp({ param($sender, $eventArgs) if ($eventArgs.Button -eq [Windows.Forms.MouseButtons]::Left) { Release-Jog } })
     $btnJog.Add_MouseCaptureChanged({ if (-not $btnJog.Capture) { Release-Jog } })
     $form.Add_Deactivate({ Release-Jog })
     $chkOverload.Add_CheckedChanged({
-        if (-not $script:suppressOverload -and -not $script:closing) {
-            try { Release-Jog; if ($chkOverload.Checked) { Send-PanelAction 'overload_on' } else { Send-PanelAction 'overload_off' } } catch { $lblMessage.Text = $_.Exception.Message }
-        }
-    })
+            if (-not $script:suppressOverload -and -not $script:closing) {
+                try { Release-Jog; if ($chkOverload.Checked) { Send-PanelAction 'overload_on' } else { Send-PanelAction 'overload_off' } } catch { $lblMessage.Text = $_.Exception.Message }
+            }
+        })
     $form.Add_FormClosing({ param($sender, $eventArgs)
-        if ($script:allowClose) { return }
-        if (-not $script:everConnected) {
-            try { Send-PanelAction 'detach' } catch {}
-            $script:allowClose = $true
-            return
-        }
-        $eventArgs.Cancel = $true
-        if (-not $script:closing) { Request-PanelClose }
-    })
+            if ($script:allowClose) { return }
+            if (-not $script:everConnected) {
+                try { Send-PanelAction 'detach' } catch {}
+                $script:allowClose = $true
+                return
+            }
+            $eventArgs.Cancel = $true
+            if (-not $script:closing) { Request-PanelClose }
+        })
     $form.Add_Shown({
-        Write-PanelJson 'ui.json' @{ pid = $PID; processStartedAtTicks = $script:processStartedAtTicks; nonce = [string]$launch.nonce; title = [string]$launch.config.title }
-        $form.Activate()
-    })
+            Write-PanelJson 'ui.json' @{ pid = $PID; processStartedAtTicks = $script:processStartedAtTicks; nonce = [string]$launch.nonce; title = [string]$launch.config.title }
+            $form.Activate()
+        })
     $timer = [Windows.Forms.Timer]::new()
     $timer.Interval = 300
     $timer.Add_Tick({
-        try {
-            Write-PanelJson 'heartbeat.json' @{ at = [DateTimeOffset]::UtcNow.ToString('o'); nonce = [string]$launch.nonce; pid = $PID; processStartedAtTicks = $script:processStartedAtTicks }
-            $activate = Join-Path $script:sessionDir 'activate.request'
-            if (Test-Path -LiteralPath $activate) {
-                $activation = [IO.File]::ReadAllText($activate, [Text.Encoding]::UTF8) | ConvertFrom-Json
-                Remove-Item -LiteralPath $activate
-                if ($activation.nonce -eq [string]$launch.nonce -and $activation.requestId -match '^[a-f0-9-]{36}$') {
-                    $form.WindowState = [Windows.Forms.FormWindowState]::Normal
-                    $form.Show()
-                    $form.Activate()
-                    $form.BringToFront()
-                    Write-PanelJson 'activation.json' @{ requestId = [string]$activation.requestId; nonce = [string]$launch.nonce; pid = $PID; processStartedAtTicks = $script:processStartedAtTicks }
+            try {
+                Write-PanelJson 'heartbeat.json' @{ at = [DateTimeOffset]::UtcNow.ToString('o'); nonce = [string]$launch.nonce; pid = $PID; processStartedAtTicks = $script:processStartedAtTicks }
+                $activate = Join-Path $script:sessionDir 'activate.request'
+                if (Test-Path -LiteralPath $activate) {
+                    $activation = [IO.File]::ReadAllText($activate, [Text.Encoding]::UTF8) | ConvertFrom-Json
+                    Remove-Item -LiteralPath $activate
+                    if ($activation.nonce -eq [string]$launch.nonce -and $activation.requestId -match '^[a-f0-9-]{36}$') {
+                        $form.WindowState = [Windows.Forms.FormWindowState]::Normal
+                        $form.Show()
+                        $form.Activate()
+                        $form.BringToFront()
+                        Write-PanelJson 'activation.json' @{ requestId = [string]$activation.requestId; nonce = [string]$launch.nonce; pid = $PID; processStartedAtTicks = $script:processStartedAtTicks }
+                    }
                 }
-            }
-            if ($null -ne $script:lastState -and $script:everConnected -and -not $script:closing) {
-                if (([DateTimeOffset]::UtcNow - [DateTimeOffset]::Parse([string]$script:lastState.updatedAt)).TotalSeconds -gt 3) { Show-Disconnected '超过 3 秒未收到状态，正在等待连接恢复。' }
-            }
-            $stateFile = Join-Path $script:sessionDir 'state.json'
-            if (Test-Path -LiteralPath $stateFile) {
-                $state = [IO.File]::ReadAllText($stateFile, [Text.Encoding]::UTF8) | ConvertFrom-Json
-                $script:lastState = $state
-                if ($state.closed -eq $true) {
-                    $script:allowClose = $true
+                if ($null -ne $script:lastState -and $script:everConnected -and -not $script:closing) {
+                    if (([DateTimeOffset]::UtcNow - [DateTimeOffset]::Parse([string]$script:lastState.updatedAt)).TotalSeconds -gt 3) { Show-Disconnected '超过 3 秒未收到状态，正在等待连接恢复。' }
+                }
+                $stateFile = Join-Path $script:sessionDir 'state.json'
+                if (Test-Path -LiteralPath $stateFile) {
+                    $state = [IO.File]::ReadAllText($stateFile, [Text.Encoding]::UTF8) | ConvertFrom-Json
+                    $script:lastState = $state
+                    if ($state.closed -eq $true) {
+                        $script:allowClose = $true
+                        $timer.Stop()
+                        $form.Close()
+                        return
+                    }
+                    $fresh = ([DateTimeOffset]::UtcNow - [DateTimeOffset]::Parse([string]$state.updatedAt)).TotalSeconds -le 3
+                    $connected = $state.connected -eq $true -and $fresh
+                    if ($connected) { $script:everConnected = $true }
+                    if (-not $script:closing) {
+                        if ($connected) {
+                            $lblMotor.Text = if ($state.motor) { '电机运行中' } else { '电机已停止' }
+                            $lblMotor.ForeColor = if ($state.motor) { [Drawing.Color]::FromArgb(19, 132, 73) } else { [Drawing.Color]::FromArgb(73, 86, 106) }
+                            $lblCpu.Text = 'PLC 状态：' + [string]$state.cpu + '    自保持：' + [int][bool]$state.latch
+                            $lblInputs.Text = ('启动输入：{0}     停止正常：{1}' -f [int][bool]$state.inputs.start, [int][bool]$state.inputs.stopOK) + "`n" + ('点动输入：{0}     过载正常：{1}' -f [int][bool]$state.inputs.jog, [int][bool]$state.inputs.frOK) + "`n" + ('电机输出：{0}' -f [int][bool]$state.motor)
+                            Set-ControlsEnabled $true
+                            $canRun = $state.cpu -eq 'Run' -and $state.inputs.stopOK -eq $true -and $state.inputs.frOK -eq $true
+                            $btnStart.Enabled = $canRun
+                            $btnJog.Enabled = $canRun
+                            if (-not $canRun) { Release-Jog }
+                            $script:suppressOverload = $true
+                            $chkOverload.Checked = -not [bool]$state.inputs.frOK
+                            $script:suppressOverload = $false
+                            $lblMessage.Text = [string]$state.message
+                        }
+                        else { Show-Disconnected $(if (-not $fresh) { '超过 3 秒未收到状态，正在等待连接恢复。' } else { [string]$state.message }) }
+                    }
+                }
+                if ($script:closing -and ([DateTime]::UtcNow - $script:closeRequestedAt).TotalSeconds -ge 8) {
                     $timer.Stop()
-                    $form.Close()
-                    return
-                }
-                $fresh = ([DateTimeOffset]::UtcNow - [DateTimeOffset]::Parse([string]$state.updatedAt)).TotalSeconds -le 3
-                $connected = $state.connected -eq $true -and $fresh
-                if ($connected) { $script:everConnected = $true }
-                if (-not $script:closing) {
-                    if ($connected) {
-                        $lblMotor.Text = if ($state.motor) { '电机运行中' } else { '电机已停止' }
-                        $lblMotor.ForeColor = if ($state.motor) { [Drawing.Color]::FromArgb(19, 132, 73) } else { [Drawing.Color]::FromArgb(73, 86, 106) }
-                        $lblCpu.Text = 'PLC 状态：' + [string]$state.cpu + '    自保持：' + [int][bool]$state.latch
-                        $lblInputs.Text = ('启动输入：{0}     停止正常：{1}' -f [int][bool]$state.inputs.start, [int][bool]$state.inputs.stopOK) + "`n" + ('点动输入：{0}     过载正常：{1}' -f [int][bool]$state.inputs.jog, [int][bool]$state.inputs.frOK) + "`n" + ('电机输出：{0}' -f [int][bool]$state.motor)
-                        Set-ControlsEnabled $true
-                        $canRun = $state.cpu -eq 'Run' -and $state.inputs.stopOK -eq $true -and $state.inputs.frOK -eq $true
-                        $btnStart.Enabled = $canRun
-                        $btnJog.Enabled = $canRun
-                        if (-not $canRun) { Release-Jog }
-                        $script:suppressOverload = $true
-                        $chkOverload.Checked = -not [bool]$state.inputs.frOK
-                        $script:suppressOverload = $false
-                        $lblMessage.Text = [string]$state.message
-                    } else { Show-Disconnected $(if (-not $fresh) { '超过 3 秒未收到状态，正在等待连接恢复。' } else { [string]$state.message }) }
+                    $choice = [Windows.Forms.MessageBox]::Show("8 秒内未收到停止确认，尚不能确认电机已停止。`n`n选择「重试」再次请求停止并关闭；选择「取消」返回面板。", '停止尚未确认', [Windows.Forms.MessageBoxButtons]::RetryCancel, [Windows.Forms.MessageBoxIcon]::Warning)
+                    if ($choice -eq [Windows.Forms.DialogResult]::Retry) { Request-PanelClose } else { $script:closing = $false; $lblMessage.Text = '已取消关闭；电机停止状态尚未确认。' }
+                    $timer.Start()
                 }
             }
-            if ($script:closing -and ([DateTime]::UtcNow - $script:closeRequestedAt).TotalSeconds -ge 8) {
-                $timer.Stop()
-                $choice = [Windows.Forms.MessageBox]::Show("8 秒内未收到停止确认，尚不能确认电机已停止。`n`n选择「重试」再次请求停止并关闭；选择「取消」返回面板。", '停止尚未确认', [Windows.Forms.MessageBoxButtons]::RetryCancel, [Windows.Forms.MessageBoxIcon]::Warning)
-                if ($choice -eq [Windows.Forms.DialogResult]::Retry) { Request-PanelClose } else { $script:closing = $false; $lblMessage.Text = '已取消关闭；电机停止状态尚未确认。' }
-                $timer.Start()
-            }
-        } catch { $lblMessage.Text = '读取状态失败：' + $_.Exception.Message }
-    })
+            catch { $lblMessage.Text = '读取状态失败：' + $_.Exception.Message }
+        })
     $timer.Start()
     [Windows.Forms.Application]::Run($form)
-} catch {
+}
+catch {
     [Windows.Forms.MessageBox]::Show($_.Exception.Message, '电机面板无法启动', [Windows.Forms.MessageBoxButtons]::OK, [Windows.Forms.MessageBoxIcon]::Error) | Out-Null
-} finally {
+}
+finally {
     if ($null -ne $timer) { $timer.Stop(); $timer.Dispose() }
     if ($null -ne $form) { $form.Dispose() }
     try { $panelMutex.ReleaseMutex() } catch {}

@@ -1,5 +1,6 @@
 # TIA Automation Skill MCP
 
+> 源码审查与可复现说明：见 [2026-11-24 源码审查报告](docs/SOURCE-AUDIT.md)。本项目提供可读源码和本地构建流程，采用 [MIT 许可证](LICENSE)。
 **用 AI Agent 完成 TIA 博途编程与仿真。**
 
 通过本地 MCP，让 AI 创建或修改 PLC 程序、编译保存，并在 PLCSIM Advanced 中运行和验证。支持 LAD/SCL、变量读写，以及启动、停止、点动操作面板。
@@ -82,3 +83,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1 -Registe
 `npm.cmd test` 检查程序逻辑与 MCP 通信，不要求安装 Siemens 软件；`npm.cmd run test:integration` 还会运行真实 Siemens API 诊断，需要先编译工作进程。测试通过不等于实际 PLC 程序已验证，仿真功能应以变量读回为准。
 
 详细使用流程见 [使用指南](docs/USAGE.md)。项目采用 [MIT 许可证](LICENSE)，第三方依赖见 [THIRD_PARTY.md](THIRD_PARTY.md)。
+
+## 随仓库安装的 AI Skill
+
+[skill/SKILL.md](skill/SKILL.md) 提供规划、备份、执行和验证流程。运行带 `-Register` 的安装脚本时会随 MCP 一起安装到 Codex；其他客户端可手动读取此文件。

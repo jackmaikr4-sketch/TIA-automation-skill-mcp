@@ -9,7 +9,9 @@
     "start": "node src/server.mjs",
     "doctor": "node scripts/doctor.mjs",
     "configure": "node scripts/configure.mjs",
-    "test:integration": "node scripts/test-integration.mjs"
+    "test:integration": "node scripts/test-integration.mjs",
+    "format": "prettier --write \"src/**/*.{ts,mjs}\" \"scripts/**/*.mjs\" \"tests/**/*.{ts,mjs}\" \"panel/**/*.mjs\"",
+    "format:check": "prettier --check \"src/**/*.{ts,mjs}\" \"scripts/**/*.mjs\" \"tests/**/*.{ts,mjs}\" \"panel/**/*.mjs\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.31.0",
@@ -23,5 +25,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/jackmaikr4-sketch/TIA-automation-skill-mcp.git"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
   }
 }

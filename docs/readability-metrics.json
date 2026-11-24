@@ -1,0 +1,152 @@
+{
+  "date": "2026-11-24",
+  "files": [
+    {
+      "path": "panel/backend.mjs",
+      "beforeLines": 71,
+      "afterLines": 151,
+      "beforeMaxLine": 202,
+      "afterMaxLine": 100
+    },
+    {
+      "path": "panel/controller.mjs",
+      "beforeLines": 74,
+      "afterLines": 179,
+      "beforeMaxLine": 198,
+      "afterMaxLine": 100
+    },
+    {
+      "path": "panel/launch.mjs",
+      "beforeLines": 167,
+      "afterLines": 457,
+      "beforeMaxLine": 341,
+      "afterMaxLine": 344
+    },
+    {
+      "path": "scripts/configure.mjs",
+      "beforeLines": 8,
+      "afterLines": 29,
+      "beforeMaxLine": 489,
+      "afterMaxLine": 94
+    },
+    {
+      "path": "scripts/doctor.mjs",
+      "beforeLines": 13,
+      "afterLines": 31,
+      "beforeMaxLine": 104,
+      "afterMaxLine": 64
+    },
+    {
+      "path": "scripts/export-tools.mjs",
+      "beforeLines": 7,
+      "afterLines": 20,
+      "beforeMaxLine": 351,
+      "afterMaxLine": 98
+    },
+    {
+      "path": "scripts/mcp-console.mjs",
+      "beforeLines": 13,
+      "afterLines": 30,
+      "beforeMaxLine": 240,
+      "afterMaxLine": 89
+    },
+    {
+      "path": "scripts/test-integration.mjs",
+      "beforeLines": 6,
+      "afterLines": 12,
+      "beforeMaxLine": 124,
+      "afterMaxLine": 66
+    },
+    {
+      "path": "src/TiaWorker.cs",
+      "beforeLines": 506,
+      "afterLines": 1142,
+      "beforeMaxLine": 567,
+      "afterMaxLine": 578
+    },
+    {
+      "path": "src/lad.mjs",
+      "beforeLines": 21,
+      "afterLines": 36,
+      "beforeMaxLine": 958,
+      "afterMaxLine": 958
+    },
+    {
+      "path": "src/ownership.mjs",
+      "beforeLines": 29,
+      "afterLines": 60,
+      "beforeMaxLine": 200,
+      "afterMaxLine": 100
+    },
+    {
+      "path": "src/project-access.mjs",
+      "beforeLines": 52,
+      "afterLines": 144,
+      "beforeMaxLine": 340,
+      "afterMaxLine": 205
+    },
+    {
+      "path": "src/runtime.mjs",
+      "beforeLines": 95,
+      "afterLines": 268,
+      "beforeMaxLine": 759,
+      "afterMaxLine": 157
+    },
+    {
+      "path": "src/server.mjs",
+      "beforeLines": 176,
+      "afterLines": 1023,
+      "beforeMaxLine": 1188,
+      "afterMaxLine": 302
+    },
+    {
+      "path": "src/simulation.mjs",
+      "beforeLines": 321,
+      "afterLines": 990,
+      "beforeMaxLine": 422,
+      "afterMaxLine": 195
+    },
+    {
+      "path": "tests/ownership.test.mjs",
+      "beforeLines": 18,
+      "afterLines": 31,
+      "beforeMaxLine": 106,
+      "afterMaxLine": 99
+    },
+    {
+      "path": "tests/panel.test.mjs",
+      "beforeLines": 207,
+      "afterLines": 486,
+      "beforeMaxLine": 450,
+      "afterMaxLine": 455
+    },
+    {
+      "path": "tests/project-access.test.mjs",
+      "beforeLines": 33,
+      "afterLines": 43,
+      "beforeMaxLine": 121,
+      "afterMaxLine": 125
+    },
+    {
+      "path": "tests/protocol.test.mjs",
+      "beforeLines": 19,
+      "afterLines": 49,
+      "beforeMaxLine": 270,
+      "afterMaxLine": 102
+    },
+    {
+      "path": "tests/runtime.test.mjs",
+      "beforeLines": 50,
+      "afterLines": 129,
+      "beforeMaxLine": 196,
+      "afterMaxLine": 134
+    },
+    {
+      "path": "tests/simulation.test.mjs",
+      "beforeLines": 330,
+      "afterLines": 1010,
+      "beforeMaxLine": 369,
+      "afterMaxLine": 125
+    }
+  ]
+}
