@@ -1,4 +1,4 @@
-param([Parameter(Mandatory = $true)][string]$ConfigFile)
+﻿param([Parameter(Mandatory = $true)][string]$ConfigFile)
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
